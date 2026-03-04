@@ -7,8 +7,8 @@ using Xunit;
 namespace HCI.Kafka.Tests.Infrastructure;
 
 /// <summary>
-/// Tests for KafkaClientFactory — validates that production-hardened
-/// configuration values are correctly applied to the Kafka client config objects.
+/// Tests for KafkaClientFactory — validates that configuration
+/// values are correctly applied to the Kafka client config objects.
 /// </summary>
 public sealed class KafkaClientFactoryTests
 {

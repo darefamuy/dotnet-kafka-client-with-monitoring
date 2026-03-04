@@ -69,14 +69,14 @@ dotnet-kafka-client-with-monitoring/
 │   │
 │   ├── HCI.Kafka.Producer/                  # Producer application (Worker Service)
 │   │   ├── Services/
-│   │   │   └── MedicinalProductProducer.cs  # Production producer with error handling
+│   │   │   └── MedicinalProductProducer.cs  # Producer with error handling
 │   │   ├── ProducerWorker.cs                # BackgroundService driving the producer
 │   │   ├── Program.cs                       # DI setup, metrics server startup
 │   │   └── appsettings.json                 # Configuration template
 │   │
 │   └── HCI.Kafka.Consumer/                  # Consumer application (Worker Service)
 │       ├── Services/
-│       │   └── MedicinalProductConsumer.cs  # Production consumer with manual offset commit
+│       │   └── MedicinalProductConsumer.cs  # Consumer with manual offset commit
 │       ├── Program.cs                       # DI setup, metrics server startup
 │       └── appsettings.json                 # Configuration template
 │

@@ -12,7 +12,7 @@ using Prometheus;
 namespace HCI.Kafka.Consumer.Services;
 
 /// <summary>
-/// Production-grade Kafka consumer for MedicinalProduct events.
+/// Kafka consumer for MedicinalProduct events.
 ///
 /// Demonstrates:
 /// - Manual offset commit (EnableAutoCommit = false) for at-least-once semantics
@@ -204,13 +204,6 @@ public sealed class MedicinalProductConsumer : BackgroundService
             product.MarketingStatus,
             product.PublicPrice,
             source);
-
-        // ── Business logic placeholder ─────────────────────────────────────────
-        // In production this would:
-        //   1. Upsert to the HCI product database
-        //   2. Trigger Compendium.ch cache invalidation
-        //   3. Notify downstream subscribers (hospitals, pharmacies)
-        //   4. Update the Elasticsearch search index
 
         if (product.MarketingStatus == MarketingStatus.Withdrawn ||
             product.MarketingStatus == MarketingStatus.Suspended)

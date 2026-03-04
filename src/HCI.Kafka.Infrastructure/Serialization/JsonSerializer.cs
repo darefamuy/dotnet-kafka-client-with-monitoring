@@ -7,9 +7,6 @@ namespace HCI.Kafka.Infrastructure.Serialization;
 /// <summary>
 /// Generic JSON serializer/deserializer for Kafka messages.
 ///
-/// MODULE NOTE: This is used in Module 1 for simplicity.
-/// Module 3 replaces this with Avro + Confluent Schema Registry
-/// for production schema governance.
 /// </summary>
 public sealed class JsonSerializer<T> : ISerializer<T>, IDeserializer<T>
 {

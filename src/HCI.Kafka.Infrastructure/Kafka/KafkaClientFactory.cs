@@ -5,13 +5,13 @@ namespace HCI.Kafka.Infrastructure.Kafka;
 
 /// <summary>
 /// Centralized factory for creating Confluent Kafka client configuration objects.
-/// All production-hardened settings are defined here — do not scatter config
+/// All essential settings are defined here — do not scatter config
 /// across services.
 /// </summary>
 public static class KafkaClientFactory
 {
     /// <summary>
-    /// Creates a production-grade ProducerConfig for Confluent Cloud.
+    /// Creates a ProducerConfig for Confluent Cloud.
     /// 
     /// Key settings:
     /// - Acks.All: wait for all in-sync replicas before acknowledging
@@ -57,7 +57,7 @@ public static class KafkaClientFactory
     }
 
     /// <summary>
-    /// Creates a production-grade ConsumerConfig for Confluent Cloud.
+    /// Creates a ConsumerConfig for Confluent Cloud.
     ///
     /// Key settings:
     /// - EnableAutoCommit = false: manual offset commit after successful processing

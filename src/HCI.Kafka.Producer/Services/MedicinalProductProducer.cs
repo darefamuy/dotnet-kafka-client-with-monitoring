@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 namespace HCI.Kafka.Producer.Services;
 
 /// <summary>
-/// Production-grade Kafka producer for MedicinalProduct events.
+/// Kafka producer for MedicinalProduct events.
 ///
 /// Demonstrates:
 /// - Confluent Cloud connectivity with SASL/SSL
