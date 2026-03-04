@@ -1,0 +1,69 @@
+version: "3.8"
+
+# Local development stack for HCI Kafka Module 1.
+# NOTE: The Kafka broker itself is Confluent Cloud — this stack only runs
+#       the local observability tooling (Prometheus + Grafana).
+#
+# Usage:
+#   docker-compose up -d
+#   Then run the Producer and Consumer apps — they will connect to Confluent Cloud.
+#   Access Grafana at http://localhost:3000 (admin/admin)
+#   Access Prometheus at http://localhost:9090
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.0
+    container_name: hci-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts:/etc/prometheus/alerts:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+    networks:
+      - hci-monitoring
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: hci-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - hci-monitoring
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: hci-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    restart: unless-stopped
+    networks:
+      - hci-monitoring
+
+networks:
+  hci-monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

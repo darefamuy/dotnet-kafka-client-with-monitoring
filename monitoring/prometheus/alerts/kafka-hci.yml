@@ -1,0 +1,115 @@
+groups:
+  - name: hci-kafka-alerts
+    rules:
+
+      # ── Consumer lag alerts ──────────────────────────────────────────────────
+
+      - alert: KafkaConsumerLagWarning
+        expr: kafka_consumer_partition_lag > 10000
+        for: 2m
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Consumer lag {{ $value }} on {{ $labels.topic }}[{{ $labels.partition }}]"
+          description: >
+            Consumer group {{ $labels.client_id }} is falling behind on partition {{ $labels.partition }}
+            of topic {{ $labels.topic }}. Drug updates may be delayed.
+
+      - alert: KafkaConsumerLagCritical
+        expr: kafka_consumer_partition_lag > 50000
+        for: 2m
+        labels:
+          severity: critical
+          team: hci-platform
+          patient_safety: "true"
+        annotations:
+          summary: "CRITICAL consumer lag {{ $value }} — drug update delays exceed SLA"
+          description: >
+            Consumer group {{ $labels.client_id }} has lag of {{ $value }} messages on
+            {{ $labels.topic }}[{{ $labels.partition }}]. This exceeds the 50,000 message threshold.
+            Drug product updates and safety alerts may be significantly delayed.
+            Action required: scale consumer instances or investigate processing bottleneck.
+
+      # ── Producer error alerts ────────────────────────────────────────────────
+
+      - alert: KafkaProduceErrorsDetected
+        expr: rate(hci_kafka_produce_errors_total[5m]) > 0
+        for: 30s
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Kafka produce errors detected on {{ $labels.topic }}"
+          description: >
+            Producer errors on topic {{ $labels.topic }} (error: {{ $labels.error_code }}).
+            Rate: {{ $value | humanize }} errors/sec. Check producer logs for details.
+
+      # ── DLQ alerts ───────────────────────────────────────────────────────────
+
+      - alert: KafkaDlqMessagesDetected
+        expr: increase(hci_kafka_dlq_messages_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Messages routed to DLQ from {{ $labels.source_topic }}"
+          description: >
+            {{ $value }} messages have been sent to the Dead Letter Queue from {{ $labels.source_topic }}.
+            Error type: {{ $labels.error_type }}.
+            Action: investigate DLQ topic and resolve root cause before replaying messages.
+
+      - alert: KafkaDlqMessagesAccumulating
+        expr: increase(hci_kafka_dlq_messages_total[30m]) > 100
+        for: 0s
+        labels:
+          severity: critical
+          team: hci-platform
+        annotations:
+          summary: "DLQ accumulating — {{ $value }} messages in 30 minutes"
+          description: >
+            More than 100 messages have been routed to the DLQ in the last 30 minutes.
+            This indicates a systemic processing failure. Immediate investigation required.
+
+      # ── Broker connectivity alerts ───────────────────────────────────────────
+
+      - alert: KafkaBrokerRttHigh
+        expr: kafka_producer_broker_rtt_p99_ms > 500
+        for: 3m
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Kafka broker P99 RTT {{ $value | humanizeDuration }} on {{ $labels.broker }}"
+          description: >
+            P99 round-trip time to broker {{ $labels.broker }} exceeds 500ms.
+            This may indicate Confluent Cloud cluster pressure or network issues.
+
+      # ── Producer queue depth ─────────────────────────────────────────────────
+
+      - alert: KafkaProducerQueueDepthHigh
+        expr: kafka_producer_queue_messages > 10000
+        for: 1m
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Producer queue depth {{ $value }} messages"
+          description: >
+            Producer {{ $labels.client_id }} has {{ $value }} messages in the local queue.
+            This may indicate slow broker acknowledgements or high produce rate.
+
+      # ── Validation errors ────────────────────────────────────────────────────
+
+      - alert: KafkaValidationErrorsSpike
+        expr: rate(hci_kafka_validation_errors_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+          team: hci-platform
+        annotations:
+          summary: "Validation error rate spike: {{ $value | humanize }}/sec"
+          description: >
+            Data quality rule {{ $labels.rule_name }} is failing at a high rate.
+            Check upstream data source {{ $labels.source_topic }} for data quality issues.

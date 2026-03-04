@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Load alerting rules
+rule_files:
+  - "alerts/kafka-hci.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # HCI Kafka Producer metrics
+  - job_name: "hci-kafka-producer"
+    static_configs:
+      - targets: ["host.docker.internal:9092"]
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # HCI Kafka Consumer metrics
+  - job_name: "hci-kafka-consumer"
+    static_configs:
+      - targets: ["host.docker.internal:9091"]
+    metrics_path: /metrics
+    scrape_interval: 10s

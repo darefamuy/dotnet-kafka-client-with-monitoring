@@ -1,0 +1,68 @@
+{
+  "type": "record",
+  "name": "DrugAlert",
+  "namespace": "ch.hcisolutions.events.v1",
+  "doc": "A Swissmedic safety alert or recall notification. CLASS_I alerts must propagate to all downstream systems within seconds.",
+  "fields": [
+    {
+      "name": "alertId",
+      "type": "string",
+      "doc": "UUID of this alert"
+    },
+    {
+      "name": "gtin",
+      "type": "string",
+      "doc": "GTIN of the affected product"
+    },
+    {
+      "name": "alertType",
+      "type": {
+        "type": "enum",
+        "name": "AlertType",
+        "symbols": ["RECALL", "SAFETY_WARNING", "SHORTAGE", "LABEL_UPDATE"]
+      }
+    },
+    {
+      "name": "severity",
+      "type": {
+        "type": "enum",
+        "name": "AlertSeverity",
+        "symbols": ["CLASS_I", "CLASS_II", "CLASS_III", "ADVISORY"]
+      }
+    },
+    {
+      "name": "headline",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "affectedLots",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": [],
+      "doc": "Affected batch/lot numbers. Empty array means entire product is affected."
+    },
+    {
+      "name": "issuedByUtc",
+      "type": "long",
+      "logicalType": "timestamp-millis"
+    },
+    {
+      "name": "expiresUtc",
+      "type": ["null", "long"],
+      "default": null,
+      "logicalType": "timestamp-millis",
+      "doc": "Alert expiry — null if indefinite"
+    },
+    {
+      "name": "sourceUrl",
+      "type": "string",
+      "doc": "Link to official Swissmedic publication"
+    }
+  ]
+}

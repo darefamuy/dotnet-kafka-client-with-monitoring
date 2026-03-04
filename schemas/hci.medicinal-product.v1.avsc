@@ -1,0 +1,94 @@
+{
+  "type": "record",
+  "name": "MedicinalProduct",
+  "namespace": "ch.hcisolutions.events.v1",
+  "doc": "A pharmaceutical product as registered in the HCI product master. Collected from SwissMedic registrations, manufacturer submissions, and the BAG Spezialitätenliste (SL). Used by Module 3 (Avro + Schema Registry).",
+  "fields": [
+    {
+      "name": "gtin",
+      "type": "string",
+      "doc": "14-digit GS1 Global Trade Item Number. Must be exactly 14 numeric characters. CEL rule: size(message.gtin) == 14"
+    },
+    {
+      "name": "articleNumber",
+      "type": "string",
+      "doc": "HCI internal article number (e.g. HCI-123456)"
+    },
+    {
+      "name": "authorizationNumber",
+      "type": "string",
+      "doc": "Swissmedic authorization number. Tagged: REGULATED — encrypted at rest via data contract rule."
+    },
+    {
+      "name": "productName",
+      "type": "string"
+    },
+    {
+      "name": "activeSubstance",
+      "type": "string",
+      "doc": "International Nonproprietary Name (INN) of the active substance"
+    },
+    {
+      "name": "atcCode",
+      "type": "string",
+      "doc": "WHO ATC classification code (e.g. N02BE01). Format: 1 letter + 2 digits + 2 letters + 2 digits."
+    },
+    {
+      "name": "dosageForm",
+      "type": "string",
+      "doc": "Pharmaceutical dose form in German (e.g. Filmtablette, Lösung zur Injektion)"
+    },
+    {
+      "name": "strength",
+      "type": "string",
+      "doc": "Strength of active substance per unit (e.g. 500 mg)"
+    },
+    {
+      "name": "manufacturer",
+      "type": "string",
+      "doc": "Marketing authorization holder"
+    },
+    {
+      "name": "marketingStatus",
+      "type": {
+        "type": "enum",
+        "name": "MarketingStatus",
+        "symbols": ["ACTIVE", "SUSPENDED", "WITHDRAWN", "PENDING"],
+        "doc": "Current marketing authorization status per Swissmedic"
+      }
+    },
+    {
+      "name": "exFactoryPrice",
+      "type": "double",
+      "doc": "Ex-factory price in CHF before VAT and distribution markup. Tagged: FINANCIAL. CEL rule: message.exFactoryPrice > 0"
+    },
+    {
+      "name": "publicPrice",
+      "type": "double",
+      "doc": "Public price in CHF as listed in BAG Spezialitätenliste. Tagged: FINANCIAL. CEL rule: message.publicPrice > 0"
+    },
+    {
+      "name": "lastUpdatedUtc",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "UTC epoch milliseconds of the last update to this record"
+    },
+    {
+      "name": "dataSource",
+      "type": "string",
+      "doc": "Originating system for this event (e.g. Swissmedic, Manufacturer, SL, HCI_Internal)"
+    },
+    {
+      "name": "packageSizeUnit",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Optional package size description (e.g. 30 Tabletten). Null-safe — added in v1 as optional."
+    },
+    {
+      "name": "narcoticsCategory",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Betäubungsmittelverzeichnis (BetmVV) category — null for non-narcotics. A = strongest restrictions."
+    }
+  ]
+}
